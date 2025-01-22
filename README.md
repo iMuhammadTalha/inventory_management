@@ -1,41 +1,114 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-<p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+# Inventory Management Microservice
 
-<p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-
-## Description
-
-A NestJS-based Inventory Management API that allows you to manage stock levels, update stock, confirm orders, and cancel reservations. This API utilizes NestJS, TypeORM, and Express.js to build a scalable and efficient backend solution for managing products in an inventory system.
+A NestJS-based Inventory Management API to efficiently manage stock levels for retail stores. This microservice supports high-frequency requests and includes thread-safe updates for inventory management.
 
 ## Features
 
-- **Get Stock Level**: Fetch current stock level of products.
-- **Update Stock**: Update stock levels for specific products.
-- **Confirm Order**: Confirm orders by deducting stock and reserved quantities.
-- **Cancel Reservation**: Cancel reservations, returning stock to inventory.
-- **Low Stock Alert**: Automatically triggers alerts when stock goes below a threshold.
+- **Get Stock Level**: Fetch current stock levels for a product.
+- **Update Stock**: Adjust stock levels based on incoming events.
+- **Order Management**:
+  - Confirm orders by reserving stock.
+  - Cancel reservations and return stock to inventory.
+- **Low Stock Alert**: Trigger alerts when stock drops below a predefined threshold.
 
-## Project Setup
+---
 
-1. **Install dependencies**:
+## API Endpoints
+
+### 1. **Get Stock Level**
+   - **URL**: `/inventory/stock-levels/:productId`
+   - **Method**: `GET`
+   - **Description**: Returns the current stock level for a product.
+   - **Response**:
+     ```json
+     {
+       "productId": "string",
+       "quantity": "number",
+       "lastUpdated": "ISO 8601 timestamp"
+     }
+     ```
+
+### 2. **Update Stock**
+   - **URL**: `/inventory/update-stock`
+   - **Method**: `POST`
+   - **Description**: Updates stock based on an event.
+   - **Request Body**:
+     ```json
+     {
+       "eventType": "stockUpdate",
+       "productId": "string",
+       "quantity": "number",
+       "timestamp": "ISO 8601 timestamp"
+     }
+     ```
+   - **Response**: Success message.
+
+### 3. **Reserve Order**
+   - **URL**: `/inventory/reserve-order/:productId`
+   - **Method**: `PUT`
+   - **Description**: Reserves stock for an order.
+   - **Request Body**:
+     ```json
+     {
+       "orderId": "string",
+       "quantity": "number"
+     }
+     ```
+
+### 4. **Cancel Reservation**
+   - **URL**: `/inventory/cancel-reservation/:productId`
+   - **Method**: `PUT`
+   - **Description**: Cancels a reservation and returns stock to inventory.
+   - **Request Body**:
+     ```json
+     {
+       "orderId": "string",
+       "quantity": "number"
+     }
+     ```
+
+---
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
+
+3. Configure the environment variables:
+Create a .env file in the root directory. Use env example. Create DB with same name as well
+
+4. Run the application:
+  ```bash 
+  npm run start:dev
+  ```
+
+* Once the application starts, open your browser and navigate to:
+  ```
+  http://localhost:3836/docs
+  ```
+  to view the Swagger API documentation and explore the available endpoints interactively.
+
+
+## Running Tests
+
+1. Run unit tests:
+  ```bash
+  npm run test
+  ```
+
+## Technologies Used
+* Framework: NestJS
+* Database: PostgreSQL (with TypeORM)
+* Testing: Jest and Supertest
+* Others: Express.js, Swagger for API documentation
+
